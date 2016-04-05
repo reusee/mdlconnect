@@ -21,7 +21,6 @@ func main() {
 	type Product struct {
 		Sku      int64
 		ThumbUrl string
-		VvicId   int
 	}
 
 	products := []Product{}
@@ -33,16 +32,13 @@ func main() {
 		parts := strings.Split(line, " ")
 		spu, err := strconv.ParseInt(parts[0], 10, 64)
 		ce(err, "parse spu")
-		vvicId, err := strconv.Atoi(parts[1])
-		ce(err, "parse vvic id")
-		thumbUrl := strings.TrimSpace(parts[2])
+		thumbUrl := strings.TrimSpace(parts[1])
 		if !strings.HasPrefix(thumbUrl, "http://") {
-			panic(me(nil, "invalid thumbnail url: %s", parts[2]))
+			panic(me(nil, "invalid thumbnail url: %s", parts[1]))
 		}
 		products = append(products, Product{
 			Sku:      spu,
 			ThumbUrl: thumbUrl,
-			VvicId:   vvicId,
 		})
 	}
 
@@ -50,9 +46,9 @@ func main() {
 
 	for i, product := range products {
 		pt("=> %d %d\n", i+1, product.Sku)
-		pt(`<img src="%s" /><br />`, headerUrl)
+		pt(`<img src="%s" class="connect-head" /><br />`, headerUrl)
 		indexes := Ints([]int{})
-		for n := 1; n <= 8; n++ {
+		for n := 1; n <= 12; n++ {
 			indexes = append(indexes, (i+n)%len(products))
 		}
 		indexes.Shuffle()
@@ -62,10 +58,11 @@ func main() {
 				product.Sku,
 				product.ThumbUrl,
 			)
-			if num == 3 {
+			if (num+1)%4 == 0 {
 				pt("<br />")
 			}
 		}
-		pt("<br /><br />\n")
+		pt(`<br /><br class="connect-tail" />`)
+		pt("\n\n")
 	}
 }
